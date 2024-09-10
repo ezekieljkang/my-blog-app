@@ -1,10 +1,12 @@
-import { getSession } from 'next-auth/react';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]'; // Adjust path as needed
 import prisma from '../../../lib/prisma';
 
 // POST /api/post
 // Required fields in body: title
 // Optional fields in body: content
-export default async function handle(req, res) {
+export default async function handle(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -16,7 +18,7 @@ export default async function handle(req, res) {
   }
 
   try {
-    const session = await getSession({ req });
+    const session = await getServerSession(req, res, authOptions);
     console.log('Session:', session); // Log the session for debugging
 
     if (!session || !session.user || !session.user.email) {
